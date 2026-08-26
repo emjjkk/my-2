@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "wallpaper-engine-for-windows10-with-tauri",
+    "title": "Wallpaper Engine for Windows 10 with Tauri",
+    "date": "July 31, 2026",
+    "readTime": "11 min read",
+    "summary": "Building a modern wallpaper engine for Windows 10 using Tauri and Rust, and attempting to make it have the smallest footprint possible while still doing the job",
+    "file": "wallpaper-engine-for-windows10-with-tauri.mdx"
+  },
+  {
+    "slug": "writing-a-audio-detection-python-script",
+    "title": "Python Script to Automatically Detect Audio Beats and Onsets",
+    "date": "May 28, 2026",
+    "readTime": "8 min read",
+    "summary": "Engineering a Python script to automatically detect audio beats and onsets using the available libraries and tools and exporting them as .edl files for DaVinci Resolve, AE, and Final Cut Pro.",
+    "file": "writing-a-audio-detection-python-script.mdx"
+  },
+  {
+    "slug": "discord-bot-to-save-the-sanity-of-3600-members",
+    "title": "Discord Bot to Save the Sanity of 3600+ Server Members",
+    "date": "June 15, 2026",
+    "readTime": "12 min read",
+    "summary": "Developing a Discord bot to manage and support a community of 3600 members, focusing on raid protection and verification system.",
+    "file": "discord-bot-to-save-the-sanity-of-3600-members.mdx"
+  },
+  {
+    "slug": "local-first-browser-ide-with-llm-support",
+    "title": "Local-First Browser IDE with LLM Support",
+    "date": "Apr 14, 2026",
+    "readTime": "10 min read",
+    "summary": "Building a local-first browser IDE with LLM support using  Vite + React, and exploring the challenges of building a local-first application that can run in the browser.",
+    "file": "local-first-browser-ide-with-llm-support.mdx"
+  },
+  {
+    "slug": "youtube-dowloader-with-python-flask",
+    "title": "YouTube Downloader with Python and Flask",
+    "date": "May 10, 2026",
+    "readTime": "8 min read",
+    "summary": "Building a simple YouTube downloader using Python and Flask, focusing on a clean and intuitive user interface and bot detection bypassing techniques.",
+    "file": "youtube-dowloader-with-python-flask.mdx"
+  }
+]

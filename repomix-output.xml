@@ -1,0 +1,2270 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+app/
+  notes/
+    page.tsx
+  p/
+    [slug]/
+      page.tsx
+  projects/
+    page.tsx
+  globals.css
+  layout.tsx
+  page.tsx
+components/
+  CopyEmailButton.tsx
+  DiscordActivity.tsx
+  ThemeToggle.tsx
+hooks/
+  use-mobile.ts
+lib/
+  posts.ts
+  projects.ts
+  utils.ts
+posts/
+  posts.json
+  writing-a-audio-detection-python-script.mdx
+.env.example
+eslint.config.mjs
+.eslintrc.json
+.gitignore
+metadata.json
+next.config.ts
+next-env.d.ts
+package.json
+postcss.config.mjs
+posts.json
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="app/notes/page.tsx">
+import React from 'react';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { ArrowLeft } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
+import { getAllPosts } from '@/lib/posts';
+
+export const metadata: Metadata = {
+  title: 'Notes — Emmanuel Alabi',
+  description: 'Technical notes, engineering thoughts, and deep dives on software development by Emmanuel Alabi.',
+};
+
+export default function NotesPage() {
+  const posts = getAllPosts();
+
+  return (
+    <main
+      id="notes-page-root"
+      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
+    >
+      {/* Top Minimal Navigation Bar */}
+      <nav className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-70">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 hover:underline underline-offset-4 hover:opacity-100 transition-opacity"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Portfolio</span>
+        </Link>
+
+        <ThemeToggle />
+      </nav>
+
+      {/* Notes Content Container */}
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-10">
+        {/* Header */}
+        <header className="space-y-2 border-b border-dashed border-current opacity-90 pb-6">
+          <div className="flex justify-between items-baseline">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight">
+              All Notes
+            </h1>
+            <span className="font-mono-ink text-xs opacity-50">[ {posts.length} ]</span>
+          </div>
+          <p className="font-serif-ink italic text-sm sm:text-base opacity-75">
+            Reflections, architectural decisions, benchmarks, and essays on building software.
+          </p>
+        </header>
+
+        {/* Full Notes List */}
+        <div id="notes-list" className="space-y-6">
+          {posts.map((note, idx) => (
+            <Link
+              key={note.slug}
+              id={`note-row-${idx}`}
+              href={`/p/${note.slug}`}
+              className="block group cursor-pointer space-y-1.5 py-1 text-inherit hover:opacity-100 transition-opacity"
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="font-serif-ink text-lg sm:text-xl font-medium group-hover:underline underline-offset-4 leading-snug">
+                  {note.title}
+                </h2>
+                <span className="font-mono-ink text-xs opacity-50 shrink-0 whitespace-nowrap group-hover:opacity-100">
+                  {note.date}
+                </span>
+              </div>
+
+              {note.summary && (
+                <p className="text-sm sm:text-base leading-relaxed opacity-75 group-hover:opacity-90 transition-opacity">
+                  {note.summary}
+                </p>
+              )}
+
+              <div className="flex items-center gap-3 font-mono-ink text-xs opacity-50 pt-0.5">
+                <span>{note.readTime}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Footer Navigation */}
+        <footer className="pt-10 border-t border-dashed border-current opacity-50 font-mono-ink text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <span>&copy; emjjkk.tech. Some things are best viewed without a rulebook</span>
+          <Link href="/" className="hover:underline">
+            ← Return Home
+          </Link>
+        </footer>
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path="app/p/[slug]/page.tsx">
+import React from 'react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import { getAllPosts, getPostBySlug, getAdjacentPosts } from '@/lib/posts';
+import type { Metadata } from 'next';
+import ThemeToggle from '@/components/ThemeToggle';
+
+interface PostPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export async function generateStaticParams() {
+  const posts = getAllPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: 'Post Not Found — Emmanuel Alabi',
+    };
+  }
+
+  return {
+    title: `${post.title} — Emmanuel Alabi`,
+    description: post.summary,
+  };
+}
+
+export default async function PostPage({ params }: PostPageProps) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  const { prev, next } = getAdjacentPosts(slug);
+
+  return (
+    <main
+      id="post-page-root"
+      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
+    >
+      {/* Top Minimal Navigation Bar */}
+      <nav className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-70">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 hover:underline underline-offset-4 hover:opacity-100 transition-opacity"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Portfolio</span>
+        </Link>
+
+        <ThemeToggle />
+      </nav>
+
+      {/* Article Content Container */}
+      <article className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-8">
+        {/* Post Metadata Header */}
+        <header className="space-y-3 border-b border-dashed border-current opacity-90 pb-6">
+          <div className="flex items-center gap-2 font-mono-ink text-xs opacity-60 uppercase">
+            <span>{post.date}</span>
+            <span>·</span>
+            <span>{post.readTime}</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-sans font-semibold tracking-tight leading-tight">
+            {post.title}
+          </h1>
+
+          {post.summary && (
+            <p className="font-serif-ink italic text-base sm:text-lg opacity-80 pt-1">
+              {post.summary}
+            </p>
+          )}
+        </header>
+
+        {/* Markdown Formatted Body (Newsreader Serif Font with Syntax Highlighted Code) */}
+        <div className="note-prose text-justify leading-relaxed">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+          >
+            {post.content}
+          </ReactMarkdown>
+        </div>
+
+        {/* Next / Previous Post Navigation */}
+        <div className="pt-10 border-t border-dashed border-current opacity-80 mt-12 space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 font-mono-ink text-xs">
+            {prev ? (
+              <Link
+                href={`/p/${prev.slug}`}
+                className="group flex flex-col items-start gap-1 p-3 border border-dashed border-current/30 hover:border-current transition-colors text-left flex-1"
+              >
+                <span className="opacity-50 flex items-center gap-1">
+                  <ArrowLeft className="w-3 h-3" /> Previous
+                </span>
+                <span className="font-sans font-medium line-clamp-1 group-hover:underline">
+                  {prev.title}
+                </span>
+              </Link>
+            ) : (
+              <div className="flex-1 hidden sm:block" />
+            )}
+
+            {next ? (
+              <Link
+                href={`/p/${next.slug}`}
+                className="group flex flex-col items-end gap-1 p-3 border border-dashed border-current/30 hover:border-current transition-colors text-right flex-1"
+              >
+                <span className="opacity-50 flex items-center gap-1">
+                  Next <ArrowRight className="w-3 h-3" />
+                </span>
+                <span className="font-sans font-medium line-clamp-1 group-hover:underline">
+                  {next.title}
+                </span>
+              </Link>
+            ) : (
+              <div className="flex-1 hidden sm:block" />
+            )}
+          </div>
+
+          {/* Footer */}
+          <footer className="pt-6 font-mono-ink text-xs opacity-40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <span>&copy; emjjkk.tech. Some things are best viewed without a rulebook</span>
+            <Link href="/" className="hover:underline">
+              ← Return Home
+            </Link>
+          </footer>
+        </div>
+      </article>
+    </main>
+  );
+}
+</file>
+
+<file path="app/projects/page.tsx">
+import React from 'react';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { ArrowLeft, ArrowUpRight, Github } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
+import { ALL_PROJECTS } from '@/lib/projects';
+
+export const metadata: Metadata = {
+  title: 'Projects — Emmanuel Alabi',
+  description: 'All software engineering projects, desktop applications, web tools, and services built by Emmanuel Alabi.',
+};
+
+export default function ProjectsPage() {
+  return (
+    <main
+      id="projects-page-root"
+      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
+    >
+      {/* Top Minimal Navigation Bar */}
+      <nav className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-70">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 hover:underline underline-offset-4 hover:opacity-100 transition-opacity"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Portfolio</span>
+        </Link>
+
+        <ThemeToggle />
+      </nav>
+
+      {/* Projects Content Container */}
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-10">
+        {/* Header */}
+        <header className="space-y-2 border-b border-dashed border-current opacity-90 pb-6">
+          <div className="flex justify-between items-baseline">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight">
+              All Projects
+            </h1>
+            <span className="font-mono-ink text-xs opacity-50">[ {ALL_PROJECTS.length} ]</span>
+          </div>
+          <p className="font-serif-ink italic text-sm sm:text-base opacity-75">
+            An archive of open-source tools, desktop engines, client platforms, and experimental scripts.
+          </p>
+        </header>
+
+        {/* Full Projects List */}
+        <div className="space-y-8">
+          {ALL_PROJECTS.map((project, idx) => (
+            <article
+              key={project.title}
+              id={`project-item-${idx}`}
+              className="space-y-1.5 group"
+            >
+              <div className="flex items-baseline justify-between flex-wrap gap-2">
+                <div className="flex items-baseline gap-2.5">
+                  <h2 className="text-base sm:text-lg font-semibold group-hover:underline underline-offset-4">
+                    {project.title}
+                  </h2>
+                  <span className="font-mono-ink text-xs opacity-50">
+                    — {project.category}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 font-mono-ink text-xs opacity-70">
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:opacity-100 hover:underline flex items-center gap-1"
+                    >
+                      <Github className="w-3 h-3" />
+                      <span>Source</span>
+                    </a>
+                  )}
+                  {project.link && (
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:opacity-100 hover:underline flex items-center gap-1"
+                    >
+                      <span>Visit</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-sm sm:text-base leading-relaxed opacity-80">
+                {project.description}
+              </p>
+
+              <div className="flex items-center flex-wrap gap-x-2 gap-y-1 font-mono-ink text-xs opacity-50 pt-0.5">
+                <span>Stack:</span>
+                {project.tech.map((t, tIdx) => (
+                  <span key={t}>
+                    {t}
+                    {tIdx < project.tech.length - 1 && <span className="ml-2">/</span>}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Footer Navigation */}
+        <footer className="pt-10 border-t border-dashed border-current opacity-50 font-mono-ink text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <span>&copy; emjjkk.tech. Some things are best viewed without a rulebook</span>
+          <Link href="/" className="hover:underline">
+            ← Return Home
+          </Link>
+        </footer>
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path="app/globals.css">
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --ink: #141413;
+    --paper: #fbfbf9;
+    --font-serif: var(--font-serif), "Newsreader", Georgia, Cambria, "Times New Roman", serif;
+    --font-mono: var(--font-mono), "Geist Mono", "IBM Plex Mono", ui-monospace, monospace;
+    --font-sans: var(--font-sans), "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .dark {
+    --ink: #ecebe8;
+    --paper: #121314;
+  }
+
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+}
+
+.font-serif-ink {
+  font-family: var(--font-serif);
+}
+
+.font-mono-ink {
+  font-family: var(--font-mono);
+}
+
+.font-sans-ink {
+  font-family: var(--font-sans);
+}
+
+/* E-Ink Refresh Flash Effect */
+@keyframes eink-flash {
+  0% {
+    filter: invert(1) contrast(200%);
+    opacity: 0.92;
+  }
+  50% {
+    filter: invert(0) contrast(140%);
+    opacity: 0.97;
+  }
+  100% {
+    filter: invert(0) contrast(100%);
+    opacity: 1;
+  }
+}
+
+.eink-refreshing {
+  animation: eink-flash 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Minimal E-Ink Canvas */
+.e-ink-container {
+  background-color: var(--paper);
+  color: var(--ink);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+/* Dotted leader for Notes list */
+.dotted-leader {
+  background-image: radial-gradient(circle, currentColor 0.8px, transparent 1.2px);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+  background-position: bottom 6px left 0;
+}
+
+/* Minimal Note Article Typography */
+.note-prose {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.note-prose h1, .note-prose h2, .note-prose h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.note-prose h1 {
+  font-size: 1.875rem;
+  line-height: 1.25;
+}
+
+.note-prose h2 {
+  font-size: 1.375rem;
+  line-height: 1.35;
+}
+
+.note-prose h3 {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.note-prose p {
+  margin-bottom: 1.25rem;
+  text-align: justify;
+}
+
+.note-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.note-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.note-prose li {
+  margin-bottom: 0.35rem;
+}
+
+.note-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px dashed currentColor;
+  opacity: 0.9;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  background: transparent;
+}
+
+.note-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.15em 0.35em;
+  border: 1px solid currentColor;
+  opacity: 0.85;
+}
+
+.note-prose pre code {
+  border: none;
+  padding: 0;
+  display: block;
+}
+
+/* Syntax Highlighting - Light Theme */
+.hljs-comment,
+.hljs-quote {
+  color: #737370;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.hljs-string,
+.hljs-title.class_,
+.hljs-section,
+.hljs-attribute,
+.hljs-literal,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-addition {
+  color: #15803d;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: #b45309;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-function,
+.hljs-title.function_ {
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-attr {
+  color: #4338ca;
+}
+
+.hljs-built_in {
+  color: #0e7490;
+}
+
+/* Syntax Highlighting - Dark Theme */
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: #8c8c88;
+  font-style: italic;
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-subst {
+  color: #f87171;
+  font-weight: 500;
+}
+
+.dark .hljs-string,
+.dark .hljs-title.class_,
+.dark .hljs-section,
+.dark .hljs-attribute,
+.dark .hljs-literal,
+.dark .hljs-template-tag,
+.dark .hljs-template-variable,
+.dark .hljs-type,
+.dark .hljs-addition {
+  color: #4ade80;
+}
+
+.dark .hljs-number,
+.dark .hljs-symbol,
+.dark .hljs-bullet {
+  color: #fb923c;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-function,
+.dark .hljs-title.function_ {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.dark .hljs-variable,
+.dark .hljs-params,
+.dark .hljs-attr {
+  color: #a5b4fc;
+}
+
+.dark .hljs-built_in {
+  color: #38bdf8;
+}
+
+.note-prose blockquote {
+  border-left: 2px solid currentColor;
+  padding-left: 1rem;
+  font-style: italic;
+  opacity: 0.85;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+</file>
+
+<file path="app/layout.tsx">
+import type {Metadata} from 'next';
+import {Geist, Geist_Mono, Newsreader} from 'next/font/google';
+import './globals.css';
+
+const geistSans = Geist({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
+
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  title: 'Emmanuel Alabi — Portfolio',
+  description: 'Minimal portfolio and writing by Emmanuel Alabi (Thursday), Thai-Nigerian full-stack developer based in Rwanda.',
+  openGraph: {
+    title: 'Emmanuel Alabi — Portfolio',
+    description: 'Minimal portfolio and writing by Emmanuel Alabi (Thursday).',
+    type: 'website',
+  },
+};
+
+export default function RootLayout({children}: {children: React.ReactNode}) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`}
+      suppressHydrationWarning
+    >
+      <body
+        className="font-sans antialiased selection:bg-neutral-800 selection:text-neutral-100 dark:selection:bg-neutral-200 dark:selection:text-neutral-900"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="app/page.tsx">
+import React from 'react';
+import Link from 'next/link';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  Github,
+} from 'lucide-react';
+import DiscordActivity from '@/components/DiscordActivity';
+import ThemeToggle from '@/components/ThemeToggle';
+import CopyEmailButton from '@/components/CopyEmailButton';
+import { getAllPosts } from '@/lib/posts';
+import { ALL_PROJECTS } from '@/lib/projects';
+
+export default function PortfolioPage() {
+  const posts = getAllPosts();
+  const visibleProjects = ALL_PROJECTS.slice(0, 5);
+  const visiblePosts = posts.slice(0, 5);
+
+  return (
+    <main
+      id="portfolio-main"
+      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
+    >
+      {/* Top Status & Activity Bar */}
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-80">
+        <DiscordActivity />
+        <ThemeToggle />
+      </div>
+
+      {/* Single Column Flowing Content */}
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-12 sm:space-y-14">
+        {/* Header & Bio */}
+        <section id="about-section" className="space-y-4">
+          <div className="space-y-1">
+            <h1
+              id="main-heading"
+              className="text-3xl sm:text-4xl font-semibold tracking-tight leading-tight"
+            >
+              Emmanuel Alabi
+            </h1>
+            <p className="font-mono-ink text-xs opacity-60 tracking-wider">
+              Software engineer, CS student
+            </p>
+          </div>
+
+          <p
+            id="bio-paragraph"
+            className="text-base sm:text-lg leading-relaxed opacity-90 pt-2 text-justify"
+          >
+            My name is Emmanuel Alabi, but you can call me Thursday. Thai-Nigerian dev based in
+            Rwanda for now. Currently building full-stack web applications with a focus on
+            performance and optimization. I also build native mobile and desktop apps as well as
+            third-party integrations.
+          </p>
+        </section>
+
+        {/* Minimal Hairline Divider */}
+        <div className="w-full border-t border-dashed border-current opacity-20" />
+
+        {/* Projects Section */}
+        <section id="projects-section" className="space-y-6">
+          <div className="flex justify-between items-baseline">
+            <h2
+              id="projects-heading"
+              className="text-lg sm:text-xl font-medium tracking-tight"
+            >
+              Projects
+            </h2>
+            <span className="font-mono-ink text-xs opacity-50">[ {ALL_PROJECTS.length} ]</span>
+          </div>
+
+          <div className="space-y-7">
+            {visibleProjects.map((project, idx) => (
+              <article
+                key={project.title}
+                id={`project-item-${idx}`}
+                className="space-y-1.5 group"
+              >
+                <div className="flex items-baseline justify-between flex-wrap gap-2">
+                  <div className="flex items-baseline gap-2.5">
+                    <h3 className="text-base sm:text-lg font-semibold group-hover:underline underline-offset-4">
+                      {project.title}
+                    </h3>
+                    <span className="font-mono-ink text-xs opacity-50">
+                      — {project.category}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 font-mono-ink text-xs opacity-70">
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:opacity-100 hover:underline flex items-center gap-1"
+                      >
+                        <Github className="w-3 h-3" />
+                        <span>Source</span>
+                      </a>
+                    )}
+                    {project.link && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:opacity-100 hover:underline flex items-center gap-1"
+                      >
+                        <span>Visit</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-sm sm:text-base leading-relaxed opacity-80">
+                  {project.description}
+                </p>
+
+                <div className="flex items-center flex-wrap gap-x-2 gap-y-1 font-mono-ink text-xs opacity-50 pt-0.5">
+                  <span>Stack:</span>
+                  {project.tech.map((t, tIdx) => (
+                    <span key={t}>
+                      {t}
+                      {tIdx < project.tech.length - 1 && <span className="ml-2">/</span>}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* See More Projects Link */}
+          {ALL_PROJECTS.length > 5 && (
+            <div className="pt-1">
+              <Link
+                id="see-more-projects-link"
+                href="/projects"
+                className="inline-flex items-center gap-1 font-mono-ink text-xs opacity-60 hover:opacity-100 hover:underline underline-offset-4 transition-opacity group"
+              >
+                <span>see all projects ({ALL_PROJECTS.length})</span>
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* Minimal Hairline Divider */}
+        <div className="w-full border-t border-dashed border-current opacity-20" />
+
+        {/* Notes (Blog) Section - Direct link to /p/slug */}
+        <section id="notes-section" className="space-y-6">
+          <div className="flex justify-between items-baseline">
+            <h2
+              id="notes-heading"
+              className="text-lg sm:text-xl font-medium tracking-tight"
+            >
+              Notes
+            </h2>
+            <span className="font-mono-ink text-xs opacity-50">[ {posts.length} ]</span>
+          </div>
+
+          <div id="notes-list" className="space-y-3 font-mono-ink text-xs sm:text-sm">
+            {visiblePosts.map((note, idx) => (
+              <Link
+                key={note.slug}
+                id={`note-row-${idx}`}
+                href={`/p/${note.slug}`}
+                className="flex items-baseline justify-between gap-3 group cursor-pointer py-1 text-inherit hover:opacity-100 transition-opacity"
+              >
+                <span className="font-serif-ink text-base sm:text-lg group-hover:underline underline-offset-4 shrink-0 max-w-[70%] sm:max-w-none truncate sm:whitespace-normal">
+                  {note.title}
+                </span>
+
+                {/* Dotted leader filler */}
+                <span className="hidden sm:block grow dotted-leader h-3 mx-2 opacity-25 group-hover:opacity-75 transition-opacity" />
+
+                <span className="font-mono-ink text-xs opacity-50 shrink-0 whitespace-nowrap group-hover:opacity-100">
+                  {note.date}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* See More Notes Link */}
+          {posts.length > 5 && (
+            <div className="pt-2">
+              <Link
+                id="see-more-notes-link"
+                href="/notes"
+                className="inline-flex items-center gap-1 font-mono-ink text-xs opacity-60 hover:opacity-100 hover:underline underline-offset-4 transition-opacity group"
+              >
+                <span>see all notes ({posts.length})</span>
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* Minimal Hairline Divider */}
+        <div className="w-full border-t border-dashed border-current opacity-20" />
+
+        {/* Contact Details Section */}
+        <section id="contact-section" className="space-y-5">
+          <div className="flex justify-between items-baseline">
+            <h2
+              id="contact-heading"
+              className="text-lg sm:text-xl font-medium tracking-tight"
+            >
+              Contact
+            </h2>
+          </div>
+
+          <p className="text-sm sm:text-base leading-relaxed opacity-80">
+            Reach out for collaborations, full-stack contracts, desktop tools, or bots.
+          </p>
+
+          {/* Contact List */}
+          <div className="space-y-2.5 font-mono-ink text-xs sm:text-sm">
+            {/* Email with copy button */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">Email</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="mailto:hi@emjjkk.tech"
+                  className="hover:underline underline-offset-2 font-medium"
+                >
+                  hi@emjjkk.tech
+                </a>
+                <CopyEmailButton />
+              </div>
+            </div>
+
+            {/* Website */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">Website</span>
+              <a
+                href="https://emjjkk.tech"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline underline-offset-2 font-medium flex items-center gap-1"
+              >
+                <span>emjjkk.tech</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* GitHub */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">GitHub</span>
+              <a
+                href="https://github.com/emjjkk"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline underline-offset-2 font-medium flex items-center gap-1"
+              >
+                <span>github.com/emjjkk</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* LinkedIn */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">LinkedIn</span>
+              <a
+                href="https://linkedin.com/in/emjjkk"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline underline-offset-2 font-medium flex items-center gap-1"
+              >
+                <span>linkedin.com/in/emjjkk</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* X / Twitter */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">X / Twitter</span>
+              <a
+                href="https://x.com/emjjkk"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline underline-offset-2 font-medium flex items-center gap-1"
+              >
+                <span>@emjjkk</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* Discord */}
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-current opacity-80 border-opacity-15">
+              <span className="opacity-60">Discord</span>
+              <span className="font-medium">@e.mjjkk</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Minimal Simple Footer */}
+        <footer
+          id="portfolio-footer"
+          className="pt-10 pb-16 font-mono-ink text-xs opacity-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-t border-dashed border-current"
+        >
+          <span>&copy; emjjkk.tech. Some things are best viewed without a rulebook</span>
+          <a
+            href="mailto:hi@emjjkk.tech"
+            className="hover:underline"
+          >
+            hi@emjjkk.tech
+          </a>
+        </footer>
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path="components/CopyEmailButton.tsx">
+'use client';
+
+import React, { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
+
+export default function CopyEmailButton() {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText('hi@emjjkk.tech');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      id="copy-email-btn"
+      onClick={copyEmail}
+      title="Copy Email Address"
+      className="p-1 hover:opacity-100 opacity-60 transition-opacity cursor-pointer inline-flex items-center justify-center"
+    >
+      {copied ? (
+        <Check className="w-3.5 h-3.5" />
+      ) : (
+        <Copy className="w-3.5 h-3.5" />
+      )}
+    </button>
+  );
+}
+</file>
+
+<file path="components/DiscordActivity.tsx">
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Disc3, Code2, Gamepad2, Radio, Clock } from 'lucide-react';
+
+interface LanyardActivity {
+  type: number; // 0: Game/Playing, 1: Streaming, 2: Listening, 3: Watching, 4: Custom status
+  name: string;
+  details?: string;
+  state?: string;
+  timestamps?: {
+    start?: number;
+    end?: number;
+  };
+}
+
+interface LanyardData {
+  discord_status: 'online' | 'idle' | 'dnd' | 'offline';
+  activities: LanyardActivity[];
+  listening_to_spotify: boolean;
+  spotify?: {
+    song: string;
+    artist: string;
+    album: string;
+    timestamps: {
+      start: number;
+      end: number;
+    };
+  };
+}
+
+// User can set their Discord ID in NEXT_PUBLIC_DISCORD_USER_ID
+// or we fall back to a reasonable default ID or dynamic fallback activity
+const DEFAULT_DISCORD_ID = process.env.NEXT_PUBLIC_DISCORD_USER_ID || '1137024341908959242';
+
+function getUtc2TimeString(): string {
+  try {
+    const now = new Date();
+    const formatted = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Africa/Kigali', // UTC+2:00
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    }).format(now);
+    return `${formatted} UTC+2`;
+  } catch {
+    return '12:00 PM UTC+2';
+  }
+}
+
+function subscribeLiveTime(callback: () => void) {
+  const timer = setInterval(callback, 1000);
+  return () => clearInterval(timer);
+}
+
+function getLiveTimeSnapshot(): string {
+  return getUtc2TimeString();
+}
+
+function getLiveTimeServerSnapshot(): string {
+  return getUtc2TimeString();
+}
+
+export default function DiscordActivity() {
+  const [activityText, setActivityText] = useState<string | null>(null);
+  const [activityType, setActivityType] = useState<'coding' | 'game' | 'music' | 'online' | 'time'>('time');
+  const [isShowingActivity, setIsShowingActivity] = useState<boolean>(false);
+  const [isFading, setIsFading] = useState<boolean>(false);
+  const [showConfigHint, setShowConfigHint] = useState(false);
+
+  const currentTime = React.useSyncExternalStore(
+    subscribeLiveTime,
+    getLiveTimeSnapshot,
+    getLiveTimeServerSnapshot
+  );
+
+  // 6-second cycle toggle between Time and Activity with smooth fade effect
+  useEffect(() => {
+    if (!activityText) {
+      return;
+    }
+
+    const cycleTimer = setInterval(() => {
+      // 1. Fade out
+      setIsFading(true);
+
+      // 2. Swap text after fade-out duration
+      setTimeout(() => {
+        setIsShowingActivity((prev) => !prev);
+        // 3. Fade back in
+        setIsFading(false);
+      }, 300);
+    }, 6000);
+
+    return () => clearInterval(cycleTimer);
+  }, [activityText]);
+
+  // Discord Lanyard listener
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchDiscordPresence() {
+      if (!DEFAULT_DISCORD_ID) return;
+
+      try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${DEFAULT_DISCORD_ID}`);
+        if (!res.ok) {
+          throw new Error('Lanyard fetch failed');
+        }
+        const json = await res.json();
+        if (!json.success || !json.data || !isMounted) return;
+
+        const data: LanyardData = json.data;
+
+        // 1. Check Spotify listening status
+        if (data.listening_to_spotify && data.spotify) {
+          setActivityText(`Listening to ${data.spotify.song} — ${data.spotify.artist}`);
+          setActivityType('music');
+          return;
+        }
+
+        // 2. Check VS Code / Coding Activity
+        const codingActivity = data.activities.find(
+          (a) =>
+            a.name.toLowerCase().includes('visual studio code') ||
+            a.name.toLowerCase().includes('code') ||
+            a.name.toLowerCase().includes('neovim') ||
+            a.name.toLowerCase().includes('cursor') ||
+            a.name.toLowerCase().includes('zed')
+        );
+
+        if (codingActivity) {
+          let repoName = 'portfolio';
+          if (codingActivity.details) {
+            const match =
+              codingActivity.details.match(/Workspace:\s*([^\s]+)/i) ||
+              codingActivity.details.match(/in\s+([^\s]+)/i);
+            if (match) {
+              repoName = match[1];
+            } else if (codingActivity.details.length < 25) {
+              repoName = codingActivity.details;
+            }
+          } else if (codingActivity.state) {
+            repoName = codingActivity.state.replace(/^Working on\s+/i, '');
+          }
+
+          setActivityText(`Coding in ${repoName}`);
+          setActivityType('coding');
+          return;
+        }
+
+        // 3. Check Game Activity
+        const gameActivity = data.activities.find((a) => a.type === 0 && a.name !== 'Custom Status');
+        if (gameActivity) {
+          setActivityText(`Playing ${gameActivity.name}`);
+          setActivityType('game');
+          return;
+        }
+
+        // 4. Online or offline without rich presence
+        setActivityText(null);
+      } catch {
+        if (isMounted) {
+          setActivityText(null);
+        }
+      }
+    }
+
+    fetchDiscordPresence();
+    const interval = setInterval(fetchDiscordPresence, 20000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getIcon = (isShowingAct: boolean) => {
+    if (!isShowingAct) {
+      return <Clock className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+    }
+    switch (activityType) {
+      case 'music':
+        return (
+          <Disc3
+            className="w-3.5 h-3.5 animate-spin opacity-80 shrink-0"
+            style={{ animationDuration: '4s' }}
+          />
+        );
+      case 'game':
+        return <Gamepad2 className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+      case 'coding':
+        return <Code2 className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+      default:
+        return <Radio className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+    }
+  };
+
+  const isDisplayingActivity = isShowingActivity && !!activityText;
+  const displayText = isDisplayingActivity ? activityText : currentTime;
+
+  return (
+    <div className="relative group inline-flex items-center gap-2 font-mono-ink text-xs opacity-75 hover:opacity-100 transition-opacity">
+      <div
+        className={`flex items-center gap-1.5 truncate max-w-[240px] sm:max-w-[340px] transition-opacity duration-300 ease-in-out ${
+          isFading ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {getIcon(isDisplayingActivity)}
+        <span className="truncate tracking-tight" suppressHydrationWarning>
+          {displayText}
+        </span>
+      </div>
+
+      {/* Subtle hover tooltip to display discord connection info */}
+      <button
+        onClick={() => setShowConfigHint(!showConfigHint)}
+        className="opacity-0 group-hover:opacity-40 hover:!opacity-100 text-[10px] underline cursor-pointer ml-0.5"
+        title="Discord Presence Setup"
+      >
+        [?]
+      </button>
+
+      {showConfigHint && (
+        <div className="absolute left-0 top-6 z-30 p-3 w-72 bg-[#fbfbf9] dark:bg-[#18191a] border border-dashed border-current text-[11px] font-mono-ink shadow-md space-y-1.5">
+          <div className="flex justify-between items-center font-bold">
+            <span>Discord Presence (Lanyard)</span>
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfigHint(false);
+              }}
+              className="cursor-pointer text-xs"
+            >
+              ✕
+            </span>
+          </div>
+          <p className="opacity-80">
+            Powered by <strong>Lanyard API</strong>. Shows live UTC+2 time by default, and alternates with real-time Discord activity (coding, Spotify, games) with a smooth fade every 6 seconds.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="components/ThemeToggle.tsx">
+'use client';
+
+import React from 'react';
+import { Sun, Moon } from 'lucide-react';
+
+function subscribeTheme(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener('eink_theme_change', callback);
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener('eink_theme_change', callback);
+    mediaQuery.removeEventListener('change', callback);
+  };
+}
+
+function getThemeSnapshot(): 'light' | 'dark' {
+  const saved = localStorage.getItem('eink_portfolio_theme');
+  if (saved === 'light' || saved === 'dark') return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function getThemeServerSnapshot(): 'light' | 'dark' {
+  return 'light';
+}
+
+function subscribeMounted() {
+  return () => {};
+}
+
+export default function ThemeToggle() {
+  const theme = React.useSyncExternalStore(subscribeTheme, getThemeSnapshot, getThemeServerSnapshot);
+  const mounted = React.useSyncExternalStore(subscribeMounted, () => true, () => false);
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('eink_portfolio_theme', nextTheme);
+    document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+    window.dispatchEvent(new Event('eink_theme_change'));
+  };
+
+  if (!mounted) {
+    return (
+      <button className="opacity-60 flex items-center gap-1.5 cursor-pointer">
+        <Moon className="w-3.5 h-3.5" />
+        <span>Dark</span>
+      </button>
+    );
+  }
+
+  const isDark = theme === 'dark';
+
+  return (
+    <button
+      id="theme-toggle"
+      onClick={toggleTheme}
+      title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+      className="hover:opacity-100 hover:underline underline-offset-4 cursor-pointer transition-opacity flex items-center gap-1.5"
+    >
+      {isDark ? (
+        <>
+          <Sun className="w-3.5 h-3.5" />
+          <span>Light</span>
+        </>
+      ) : (
+        <>
+          <Moon className="w-3.5 h-3.5" />
+          <span>Dark</span>
+        </>
+      )}
+    </button>
+  );
+}
+</file>
+
+<file path="hooks/use-mobile.ts">
+import * as React from "react";
+
+const MOBILE_BREAKPOINT = 768;
+
+function subscribe(callback: () => void) {
+  const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+function getSnapshot() {
+  return window.innerWidth < MOBILE_BREAKPOINT;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+export function useIsMobile() {
+  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+</file>
+
+<file path="lib/posts.ts">
+import fs from 'fs';
+import path from 'path';
+
+export interface PostMeta {
+  slug: string;
+  title: string;
+  date: string;
+  readTime: string;
+  summary: string;
+  file: string;
+}
+
+export interface PostWithContent extends PostMeta {
+  content: string;
+}
+
+const postsDirectory = path.join(process.cwd(), 'posts');
+const postsJsonPathPrimary = path.join(process.cwd(), 'posts.json');
+const postsJsonPathSecondary = path.join(postsDirectory, 'posts.json');
+
+export function getAllPosts(): PostMeta[] {
+  try {
+    const targetPath = fs.existsSync(postsJsonPathPrimary)
+      ? postsJsonPathPrimary
+      : fs.existsSync(postsJsonPathSecondary)
+      ? postsJsonPathSecondary
+      : null;
+
+    if (targetPath) {
+      const fileContents = fs.readFileSync(targetPath, 'utf8');
+      const posts: PostMeta[] = JSON.parse(fileContents);
+      return posts;
+    }
+  } catch (error) {
+    console.error('Error reading posts.json:', error);
+  }
+  return [];
+}
+
+
+export function getPostBySlug(slug: string): PostWithContent | null {
+  const posts = getAllPosts();
+  const postMeta = posts.find((p) => p.slug === slug);
+  if (!postMeta) return null;
+
+  try {
+    const filePath = path.join(postsDirectory, postMeta.file);
+    let content = '';
+    if (fs.existsSync(filePath)) {
+      content = fs.readFileSync(filePath, 'utf8');
+    } else {
+      content = `# ${postMeta.title}\n\n${postMeta.summary}`;
+    }
+    return {
+      ...postMeta,
+      content,
+    };
+  } catch (error) {
+    console.error(`Error reading post file for slug ${slug}:`, error);
+    return {
+      ...postMeta,
+      content: `# ${postMeta.title}\n\n${postMeta.summary}`,
+    };
+  }
+}
+
+export function getAdjacentPosts(currentSlug: string): {
+  prev: PostMeta | null;
+  next: PostMeta | null;
+} {
+  const posts = getAllPosts();
+  const index = posts.findIndex((p) => p.slug === currentSlug);
+  if (index === -1) return { prev: null, next: null };
+
+  const prev = index > 0 ? posts[index - 1] : null;
+  const next = index < posts.length - 1 ? posts[index + 1] : null;
+
+  return { prev, next };
+}
+</file>
+
+<file path="lib/projects.ts">
+export interface Project {
+  title: string;
+  category: string;
+  description: string;
+  tech: string[];
+  link?: string;
+  github?: string;
+}
+
+export const ALL_PROJECTS: Project[] = [
+  {
+    title: 'Livewall',
+    category: 'Desktop App',
+    description:
+      'A lightweight live wallpaper engine for Windows with an ultra-minimal footprint (<10MB RAM). Enables smooth video wallpapers without draining system resources.',
+    tech: ['Tauri', 'Rust', 'TypeScript', 'React'],
+    github: 'https://github.com/emjjkk/livewall',
+    link: 'https://github.com/emjjkk/livewall/releases',
+  },
+  {
+    title: 'MyDE',
+    category: 'Web Application',
+    description:
+      'Local-first browser web IDE equipped with local LLM integration and sandboxed in-browser code execution.',
+    tech: ['Vite', 'React', 'TypeScript', 'WebContainers'],
+    github: 'https://github.com/emjjkk',
+    link: 'https://emjjkk.tech',
+  },
+  {
+    title: 'beat-detection',
+    category: 'Python CLI / Tool',
+    description:
+      'Automatic audio analysis script that detects beats, drops, and transients in music, generating exportable edit markers for DaVinci Resolve & Premiere Pro.',
+    tech: ['Python', 'Librosa', 'NumPy', 'Audio DSP'],
+    github: 'https://github.com/emjjkk/beat-detection',
+  },
+  {
+    title: 'MyDoc',
+    category: 'Web App / Tool',
+    description:
+      'Offline markdown-based documentation editor built for the browser with instant split-pane preview, table generator, and export workflows.',
+    tech: ['Next.js', 'TypeScript', 'TailwindCSS'],
+    github: 'https://github.com/emjjkk',
+  },
+  {
+    title: 'Ngozi’s Kitchen',
+    category: 'Full-Stack Web',
+    description:
+      'Full-stack catering and meal ordering platform with real-time customer ordering workflows, dispatch notifications, and bespoke admin management.',
+    tech: ['Next.js', 'Node.js', 'PostgreSQL', 'TailwindCSS'],
+    link: 'https://ngoziskitchen.rw',
+  },
+  {
+    title: 'Vistab',
+    category: 'Browser Extension',
+    description:
+      'Minimalist new-tab dashboard extension for Chrome featuring a distraction-free to-do list, dynamic wallpaper toggling, and local data persistence.',
+    tech: ['TypeScript', 'Chrome Extension API', 'CSS'],
+    github: 'https://github.com/emjjkk',
+  },
+  {
+    title: 'yt-downloader',
+    category: 'Web Utility',
+    description:
+      'High-performance YouTube video & audio extraction web service utilizing authenticated session cookies to bypass automated bot checks cleanly.',
+    tech: ['Python', 'Flask', 'yt-dlp'],
+    github: 'https://github.com/emjjkk',
+  },
+];
+</file>
+
+<file path="lib/utils.ts">
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+</file>
+
+<file path="posts/posts.json">
+[
+  {
+    "slug": "writing-a-audio-detection-python-script",
+    "title": "Python script to automatically detect audio beats and onsets",
+    "date": "May 28, '26",
+    "readTime": "4 min read",
+    "summary": "Extracting transient markers, spectral flux envelopes, and tempo grids from audio waveforms with Python and DSP.",
+    "file": "writing-a-audio-detection-python-script.mdx"
+  }
+]
+</file>
+
+<file path="posts/writing-a-audio-detection-python-script.mdx">
+If you're a developer, this is your sign to build a project you have absolutely no clue about, because you will learn it on the way.
+
+I have a hobby that most people in my circle don't know about. I make montage edits. Not the cringe slideshows-with-transitions kind — the actual cinematic, cut-to-the-beat, fan-edit kind that you see floating around on TikTok and YouTube with three million views and no context about who made them. My main subjects are celebrities I go through phases obsessing over, and right now that's Karina from aespa. If you know, you know. If you don't, go watch their stages and come back in two hours when you've lost your mind a little.
+
+The tool I use is DaVinci Resolve, which is genuinely one of the most impressive pieces of software you can get for free. The color grading alone is industry standard. But here's the thing — making a good montage edit isn't really about color grading. It's about the sync. The whole visual language of a well-made edit is built on cuts that land exactly on the beat, transitions that breathe in the spaces between hits, moments that punch forward right when the bass drops. When it works, it feels almost physical to watch. When it doesn't, the whole thing feels sloppy even if every individual clip looks beautiful.
+
+And syncing manually is genuinely painful. You're scrubbing through a waveform, dropping markers by hand, trying to feel where the beat is while also judging whether the clip length is right, whether the transition makes sense, whether the energy is building correctly. It's creative decision-making stacked on top of tedious mechanical work, and the mechanical part really shouldn't be taking your attention at all.
+
+Solutions exist. There are plugins, there are online tools, there are people selling Resolve templates with "auto-sync" features. I tried a bunch of them. Every single one had the same problem: they detect beats in regular intervals. They find the tempo — let's say 128 BPM — and they drop a marker every 0.468 seconds like clockwork, all the way through the track. Clean, evenly spaced, technically correct, completely useless for what I actually need.
+
+Because here's the thing about the tracks I edit to. The parts that matter — the actual moments you cut to — aren't evenly spaced. There's a buildup, a drop, a breakdown, a build again. There are snare hits that deserve a cut and kick drums that deserve a cut and hi-hat patterns that you ride for a sequence and then a single heavy transient that you slam a clip change into. The interesting musical information is not uniformly distributed across the timeline. It's clustered, irregular, shaped by the song's arrangement, and that's exactly what makes it work emotionally.
+
+I wasn't asking for much. I wasn't looking for an AI-powered integrated plugin that analyzes my timeline and auto-edits my footage. I didn't want something that talks to Resolve's API or requires a subscription or installs a service that runs in the background. All I wanted was: give me a list of timestamps. Just timestamps, in seconds, marking the moments in this audio file that are worth cutting to. I'll import them into Resolve as markers and take it from there. The output format I needed was an EDL file — Edit Decision List — which is a plain text format that professional NLEs have understood for decades.
+
+That felt simple enough that I figured I could just build it myself. Famously, these are the projects that teach you the most.
+
+
+## The Repo Somehow Took Off
+
+Before I get into the code, I want to mention something that still kind of baffles me. This repo — a small Python utility script I built for myself during queue timers — is one of the only things I've ever put on GitHub that got beyond five stars without me doing any promotion whatsoever. No post, no Reddit thread, no newsletter mention. I didn't even write a great README initially. It just quietly accumulated stars from people who apparently had the exact same problem I had, which is a better form of validation than anything you can engineer. There's a whole category of tools that exist in this gap between "I need this" and "nothing adequate exists" and when you build in that gap and share it, people find you eventually.
+
+You can find the repo here: [https://github.com/emjjkk/beat-detection/](https://github.com/emjjkk/beat-detection/).
+
+Anyway. The code.
+
+
+## Step 1: Starting with Librosa
+
+The first version I wrote used Librosa, which is the standard Python library for audio and music analysis. It's well-documented, pip-installable, and covers a huge range of use cases from beat tracking to spectral analysis to mel-frequency cepstral coefficients (which I learned is a real thing and not something I made up).
+
+Installation is one command:
+
+```bash
+pip install librosa numpy
+```
+
+The Librosa script — `librosa.py` in the repo — is the simpler of the two scripts and a good place to start if you want to understand what's actually happening before you reach for a more powerful tool.
+
+The entry point takes the audio file path and a few optional arguments via argparse:
+
+```python
+parser = argparse.ArgumentParser(
+    description="Detect beat timestamps from audio and create EDL markers"
+)
+parser.add_argument("file", help="Path to audio file (mp3/wav)")
+parser.add_argument("--out", help="Output text file", default="output/beats.txt")
+parser.add_argument("--edl", help="Output EDL file", default="output/markers.edl")
+parser.add_argument("--fps", type=int, default=30, help="Timeline FPS")
+parser.add_argument("--method", default="beat", choices=["beat", "onset", "both"],
+                   help="Detection method: beat (rhythmic), onset (transients), or both")
+```
+
+The `--method` argument is the most important one. There are two fundamentally different things you might want to detect in an audio file: rhythmic beats (the steady pulse of the music, tempo-based) and onsets (transient events — a snare hit, a clap, a crash, a sound starting). For editing montages, onsets are usually more useful. But I exposed both and a combined mode because different tracks call for different approaches.
+
+Loading audio with Librosa is one line:
+
+```python
+y, sr = librosa.load(args.file)
+```
+
+`y` is the audio time series as a NumPy array. `sr` is the sample rate — typically 22050 Hz when loaded through Librosa's default resampler, regardless of what the original file's sample rate was. Every subsequent Librosa call takes `y` and `sr` as its primary inputs.
+
+Beat detection is also nearly one line:
+
+```python
+tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr, units='time')
+tempo_value = tempo[0] if hasattr(tempo, '__len__') else tempo
+print(f"Detected tempo: {tempo_value:.1f} BPM")
+```
+
+The `units='time'` parameter tells Librosa to return beat positions in seconds rather than frame indices, which is what we want. The `tempo` return value is either a scalar or an array depending on your Librosa version (it changed between versions, hence the `hasattr` check), and it gives you the estimated BPM, which is a nice sanity check to print out. If it says 97 BPM and you know the track is 128, something's off.
+
+Onset detection is similarly concise:
+
+```python
+onsets = librosa.onset.onset_detect(
+    y=y,
+    sr=sr,
+    units="time",
+    backtrack=True
+)
+```
+
+The `backtrack=True` parameter here is subtle but meaningful. By default, onset detection finds peaks in the onset strength envelope, which tends to be slightly after the actual moment of attack. Backtracking shifts each onset back to the nearest local minimum before the peak — in other words, it snaps the timestamp to the actual moment the sound started rather than the moment it reached its peak energy. For tight editing, you want the attack, not the peak.
+
+After collecting timestamps from whichever method was chosen, we deduplicate and filter:
+
+```python
+beats = sorted(set([round(float(t), 3) for t in beats]))
+
+filtered_beats = []
+last_beat = -1
+min_gap = 0.1
+for beat in beats:
+    if beat - last_beat >= min_gap:
+        filtered_beats.append(beat)
+        last_beat = beat
+```
+
+The `round(float(t), 3)` converts everything to millisecond precision before deduplication. Without rounding, timestamps like `1.3999999999` and `1.4000000001` would be treated as different events. The minimum gap filter (100ms by default) removes cases where beat tracking and onset detection both fired on the same event and ended up slightly offset from each other.
+
+ 
+
+## The EDL Format
+
+The output format that actually makes this useful for video editing is the EDL file. An EDL is one of the oldest interchange formats in professional video — it dates back to linear tape editing — but every modern NLE still reads it. The format looks like this:
+
+```
+TITLE: Timeline Markers
+FCM: NON-DROP FRAME
+
+001  001      V     C        00:00:00:03 00:00:00:03 00:00:00:03 00:00:00:03
+* FROM CLIP NAME: Marker 1
+|M:00:00:00:03|Beat 1
+```
+
+Each entry has a sequential number, a reel number (we just use `001` since we're generating markers, not real edit decisions), a track type (`V` for video), a transition type (`C` for cut), and then four identical timecodes. In a real EDL, those four timecodes represent the source in-point, source out-point, record in-point, and record out-point. For markers, we just repeat the single timestamp four times.
+
+The `|M:...|` line is the marker label format that DaVinci Resolve understands when importing EDL files as markers. Get this right and Resolve drops markers at exactly the right positions with labels. Get it wrong and you import nothing or get a confusing error.
+
+Timecode conversion is a straightforward math operation:
+
+```python
+def seconds_to_timecode(seconds, fps=30):
+    hours   = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs    = int(seconds % 60)
+    frames  = int((seconds % 1) * fps)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}:{frames:02d}"
+```
+
+The frames component is the fractional second converted to a frame count at your chosen FPS. If your Resolve project is at 24fps and you generate the EDL at 30fps, every marker will be at the wrong position. The `--fps` argument exists for exactly this reason — always match it to your project timeline.
+
+ 
+
+## Step 2: The Essentia Upgrade
+
+The Librosa script worked, kind of. Onset detection was quite inconsistent and to be honest, not really good enough for what I originally was building this for. It was finding all the beats, not specifically the important ones. 
+
+For a track with a lot of rhythmic information — lots of drum hits, lots of onsets — the output would have hundreds of markers densely packed through the timeline. That's not useless, but it means you're still doing a lot of manual cleanup in Resolve after importing. You want the beats you actually edit to. Not every snare hit in a 32-bar section — the snare hits that punctuate the musical structure. I had to do some researh to find a better solution, and I came across Essentia. If Librosa is a supra mk4, Essentia is an mk5. Better. More powerful. More complicated.
+
+The Essentia-based script (`essentia.py`) is the answer to that. Essentia is a more heavyweight audio analysis library developed by the Music Technology Group at Universitat Pompeu Fabra in Barcelona. It's more complex to work with, but it gives you much finer-grained control over the detection pipeline and exposes tools that Librosa doesn't, specifically around loudness and onset detection functions.
+
+```bash
+pip install essentia numpy
+```
+
+The architecture of the Essentia script has four distinct stages that run in sequence: beat tracking, onset detection, loudness filtering, and smart spacing. Let me walk through each one.
+
+ 
+
+### Beat Tracking with BeatTrackerMultiFeature
+
+```python
+from essentia.standard import BeatTrackerMultiFeature
+
+def detect_beats(audio):
+    tracker = BeatTrackerMultiFeature()
+    beats, confidence = tracker(audio)
+    return [float(b) for b in beats]
+```
+
+`BeatTrackerMultiFeature` is Essentia's most accurate beat tracker. As the name suggests, it uses multiple feature streams — spectral flux, loudness, complex spectral difference — and combines them to produce a more robust beat estimate than any single feature alone. It also returns a confidence score, which I'm not using here but could be used to filter out sections where the tracker is uncertain (a breakdown with no drums, for example).
+
+ 
+
+### Onset Detection with HFC
+
+The onset detection is more involved and worth understanding in detail:
+
+```python
+def detect_onsets(audio, sample_rate=44100, sensitivity='low'):
+    frame_size = 2048
+    hop_size   = 512
+
+    window     = Windowing(type="hann")
+    spectrum_alg = Spectrum()
+    odf        = OnsetDetection(method="hfc")
+    onset_picker = Onsets()
+
+    odf_values = []
+
+    for frame in FrameGenerator(audio, frameSize=frame_size, hopSize=hop_size, startFromZero=True):
+        windowed = window(frame)
+        spectrum = spectrum_alg(windowed)
+        odf_values.append(odf(spectrum, spectrum))
+```
+
+This is a manual signal processing pipeline. Rather than calling a single high-level function, we're building the detection chain ourselves:
+
+1. `FrameGenerator` slices the raw audio into overlapping frames of 2048 samples each, advancing by 512 samples (the hop size) between frames. At 44100 Hz, a 2048-sample frame is about 46ms of audio. The 512-sample hop means consecutive frames overlap by 75%, which gives us good time resolution.
+
+2. `Windowing` applies a Hann window to each frame. Without windowing, the hard edges at the start and end of each frame would introduce spectral artifacts (a phenomenon called spectral leakage). A Hann window tapers the frame to zero at both ends, which eliminates leakage at the cost of some frequency resolution — a well-understood tradeoff in signal processing.
+
+3. `Spectrum` converts the windowed frame from the time domain to the frequency domain via FFT. Each frame becomes a vector of magnitudes at different frequencies.
+
+4. `OnsetDetection(method="hfc")` computes the High Frequency Content of each spectrum. HFC is a measure of how much energy is concentrated in the high-frequency bins of the spectrum. Onsets — particularly percussive transients like snare hits and claps — cause sudden bursts of high-frequency energy, so HFC peaks reliably at onset moments.
+
+The ODF (Onset Detection Function) gives us a 1D array of values over time, one per frame. We then normalize it and apply a sensitivity threshold:
+
+```python
+odf_array = np.array(odf_values)
+if len(odf_array) > 0 and odf_array.max() > 0:
+    odf_array = odf_array / odf_array.max()
+
+    thresholds = {
+        'very_low': 0.6,
+        'low':      0.4,
+        'medium':   0.2,
+        'high':     0.1
+    }
+    threshold = thresholds.get(sensitivity, 0.4)
+    odf_array[odf_array < threshold] = 0
+```
+
+Normalizing to 0–1 and then zeroing out values below the threshold means we're keeping only the frames where ODF was in the top percentile relative to the song's own dynamics. At `very_low` sensitivity, we keep only the frames where ODF exceeded 60% of its maximum — only the sharpest, most dramatic transients. At `high` sensitivity, anything above 10% of maximum qualifies, which picks up subtler hits.
+
+The threshold values were determined empirically. I ran the script against a bunch of tracks I actually edit to and tuned the numbers until the output at each sensitivity level felt right for its intended use case.
+
+ 
+
+### Loudness Filtering
+
+This is the stage that makes Essentia meaningfully better than the Librosa version for my use case:
+
+```python
+def filter_by_loudness(audio, times, sample_rate=44100, percentile=70):
+    frame_size = 4096
+    hop_size   = 2048
+    
+    loudness_alg = Loudness()
+    loudness_values = []
+    time_stamps = []
+    
+    for i, frame in enumerate(FrameGenerator(audio, frameSize=frame_size, hopSize=hop_size, startFromZero=True)):
+        loudness_values.append(loudness_alg(frame))
+        time_stamps.append(i * hop_size / sample_rate)
+    
+    threshold = np.percentile(loudness_values, percentile)
+    
+    filtered = []
+    for t in times:
+        idx = min(range(len(time_stamps)), key=lambda i: abs(time_stamps[i] - t))
+        if loudness_values[idx] >= threshold:
+            filtered.append(t)
+    
+    return filtered
+```
+
+This function builds a loudness profile of the entire track — a vector of loudness measurements at regular intervals. Then, for each candidate marker timestamp, it finds the nearest loudness measurement and checks whether it exceeds the percentile threshold.
+
+At the default `--loudness 70`, we keep only markers that fall in moments at or above the 70th percentile of loudness for the track. That means we're throwing away 70% of the track by loudness and only marking the top 30% by energy level. For EDM, drops, and impact moments, this is almost exactly right — the musical events worth cutting to are the loud ones. Builds, breakdowns, and quiet sections generate few or no markers.
+
+The percentile threshold rather than an absolute threshold is important. Using an absolute dB threshold would work differently on a heavily compressed track versus a dynamically rich orchestral recording. The percentile is self-calibrating — it's always relative to the track's own dynamic range, not some external reference.
+
+ 
+
+### Smart Spacing
+
+Even after loudness filtering, you can still end up with clusters of markers that are too close together to be useful:
+
+```python
+def smart_spacing(times, min_gap=0.5):
+    if not times:
+        return []
+    
+    spaced = [times[0]]
+    for t in times[1:]:
+        if t - spaced[-1] >= min_gap:
+            spaced.append(t)
+    
+    return spaced
+```
+
+This is a greedy algorithm that walks through the sorted timestamp list and keeps a timestamp only if it's at least `min_gap` seconds after the last kept timestamp. The default is 500ms. You generally can't cut faster than about 12 frames at 24fps and have it register as a distinct cut rather than a flash — and you usually don't want to be anywhere near that limit. Half a second gives you a minimum clip length that's still fast but actually visible.
+
+ 
+
+### Snapping Onsets to Beats
+
+The final processing step is one of the subtler ideas in the script:
+
+```python
+def snap_onsets_to_beats(beats, onsets, snap_threshold=0.08):
+    snapped = set(beats)
+
+    for onset in onsets:
+        if not beats:
+            snapped.add(onset)
+            continue
+        nearest_beat = min(beats, key=lambda b: abs(b - onset))
+        if abs(nearest_beat - onset) <= snap_threshold:
+            snapped.add(nearest_beat)
+        else:
+            snapped.add(onset)
+
+    return sorted(snapped)
+```
+
+Beat tracking and onset detection can find the same musical event at slightly different timestamps. Beat tracking might place an event at 1.400s; onset detection might place it at 1.387s. If you keep both, you get two markers 13ms apart that both represent the same hit, and importing both into Resolve would just be noise.
+
+The snap function says: if an onset is within 80ms of a beat, snap it to the beat's position. The beat tracker tends to be temporally more accurate for periodic events, so when there's a near-match, we prefer the beat's timestamp. If the onset is more than 80ms from any beat, it's probably a genuine transient that the beat tracker missed, so we keep it at its own position.
+
+The combined output — beats plus snapped onsets — goes through the loudness filter and spacing filter before becoming the final marker list.
+
+ 
+
+## Using It
+
+The basic usage is minimal:
+
+```bash
+# Librosa version — beats only
+python librosa.py song.mp3
+
+# Librosa version — onsets (transients), better for editing
+python librosa.py song.mp3 --method onset
+
+# Essentia version — smart drop/hit detection
+python essentia.py song.mp3
+
+# Essentia — tuned for EDM with major drops only
+python essentia.py edm_track.wav --sensitivity very_low --loudness 85 --min-gap 1.0
+
+# Essentia — denser markers, good for fast-cut sections
+python essentia.py song.wav --sensitivity medium --loudness 60 --min-gap 0.3
+```
+
+The output goes to `output/beats.txt` (raw timestamps, one per line) and `output/markers.edl` (the EDL file for Resolve). In DaVinci Resolve, you import the EDL as timeline markers via File → Import → Timeline Markers from EDL, and you get a marker at every detected beat. Then you just cut to the markers.
+
+The first time I ran it against one of my actual edit tracks and imported the result into Resolve, I had maybe 30 markers across a 3-minute song, all sitting on meaningful musical moments — the drops, the main snare hits, the transition points. No cleanup needed. It saved a genuinely embarrassing amount of time.
+
+ 
+
+## What's Next, Maybe
+
+It'd be cool if I could turn this into a web app. The honest answer is that I'm thinking about it, but I'm not willing to invest in it yet. The Python script works, and it works well enough for my own use that there's no urgent personal itch to scratch. A web app would mean file upload handling, probably some server-side processing (or figuring out how to run audio analysis in the browser, which is its own rabbit hole), a UI that doesn't require touching a terminal, and the general overhead of actually deploying and maintaining something. That's a real project. I'm not sure if I have the willingness to do that yet.
+
+But the fact that the repo is sitting at where it is, with zero promotion and a specific enough use case that I genuinely didn't expect anyone else to need it, is the kind of signal worth paying attention to. If enough people are finding this organically, maybe there's something worth building here.
+
+For now though, it does exactly what I needed it to do. The Karina edits are in sync enough to create a positive feedback loop of obsession. That's enough.
+</file>
+
+<file path=".env.example">
+# GEMINI_API_KEY: Required for Gemini AI API calls.
+# AI Studio automatically injects this at runtime from user secrets.
+# Users configure this via the Secrets panel in the AI Studio UI.
+GEMINI_API_KEY="MY_GEMINI_API_KEY"
+
+# APP_URL: The URL where this applet is hosted.
+# AI Studio automatically injects this at runtime with the Cloud Run service URL.
+# Used for self-referential links, OAuth callbacks, and API endpoints.
+APP_URL="MY_APP_URL"
+
+# Discord User ID for Lanyard Real-Time Activity widget (optional)
+NEXT_PUBLIC_DISCORD_USER_ID=""
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig } from "eslint/config";
+import next from "eslint-config-next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default defineConfig([{
+    extends: [...next],
+}]);
+</file>
+
+<file path=".eslintrc.json">
+{
+  "extends": "next"
+}
+</file>
+
+<file path=".gitignore">
+node_modules/
+.next/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+</file>
+
+<file path="metadata.json">
+{
+  "name": "Emmanuel Alabi",
+  "description": "Minimal E-Ink inspired portfolio and notes for Emmanuel Alabi (Thursday), Thai-Nigerian full-stack developer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+</file>
+
+<file path="next.config.ts">
+import type {NextConfig} from 'next';
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  turbopack: {},
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  // Allow access to remote image placeholder.
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**', // This allows any path under the hostname
+      },
+    ],
+  },
+  output: 'standalone',
+  transpilePackages: ['motion'],
+  webpack: (config, {dev}) => {
+    // HMR is disabled in AI Studio via DISABLE_HMR env var.
+    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+    if (dev && process.env.DISABLE_HMR === 'true') {
+      config.watchOptions = {
+        ignored: /.*/,
+      };
+    }
+    return config;
+  },
+};
+
+export default nextConfig;
+</file>
+
+<file path="next-env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+</file>
+
+<file path="package.json">
+{
+  "name": "my",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "clean": "next clean"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@hookform/resolvers": "^5.2.1",
+    "autoprefixer": "^10.4.21",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.553.0",
+    "motion": "^12.23.24",
+    "next": "^16.3.3",
+    "postcss": "^8.5.6",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.11",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.0.8",
+    "firebase-tools": "^15.28.1",
+    "tailwindcss": "4.1.11",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "5.9.3"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="posts.json">
+[
+  {
+    "slug": "building-a-wallpaper-engine",
+    "title": "Building a High-Performance Wallpaper Engine in Rust & Tauri",
+    "date": "Aug 2024",
+    "readTime": "4 min read",
+    "summary": "Engineering a lightweight GPU-accelerated live wallpaper engine with near-zero idle CPU consumption.",
+    "file": "building-a-wallpaper-engine.mdx"
+  },
+  {
+    "slug": "local-first-state-sync",
+    "title": "Local-First Architecture & Conflict-Free State",
+    "date": "Jul 2024",
+    "readTime": "5 min read",
+    "summary": "Moving beyond centralized HTTP mutations using local-first storage, CRDTs, and deterministic clocks.",
+    "file": "local-first-state-sync.mdx"
+  },
+  {
+    "slug": "optimizing-react-renders",
+    "title": "Optimizing React Renders: Beyond Memoization",
+    "date": "Jun 2024",
+    "readTime": "6 min read",
+    "summary": "Practical techniques for eliminating wasted re-renders using composition patterns and micro-state management.",
+    "file": "optimizing-react-renders.mdx"
+  },
+  {
+    "slug": "desktop-integrations-with-rust",
+    "title": "Native Desktop Integrations with Rust & WebSockets",
+    "date": "Apr 2024",
+    "readTime": "5 min read",
+    "summary": "Building resilient low-latency bridge systems connecting browser overlays with OS-level event hooks.",
+    "file": "desktop-integrations-with-rust.mdx"
+  },
+  {
+    "slug": "zero-overhead-audio-dsp",
+    "title": "Zero-Overhead Audio DSP in WebAssembly & Python",
+    "date": "Mar 2024",
+    "readTime": "4 min read",
+    "summary": "Extracting transient markers, spectral flux envelopes, and tempo grids from audio waveforms with Python and DSP.",
+    "file": "zero-overhead-audio-dsp.mdx"
+  },
+  {
+    "slug": "e-ink-typography-and-minimalism",
+    "title": "Minimal Typography: Designing for Reading & Clarity",
+    "date": "Feb 2024",
+    "readTime": "3 min read",
+    "summary": "Exploring typographic pacing, high contrast palettes, and digital document ergonomics without noise.",
+    "file": "e-ink-typography-and-minimalism.mdx"
+  }
+]
+</file>
+
+<file path="README.md">
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
+
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+View your app in AI Studio: https://ai.studio/apps/a35fa0f7-f995-4fa3-ad4e-b92dd3979d4f
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+</file>
+
+</files>

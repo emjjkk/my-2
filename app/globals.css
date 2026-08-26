@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --ink: #141413;
+    --paper: #fbfbf9;
+    --font-serif: var(--font-serif), "Newsreader", Georgia, Cambria, "Times New Roman", serif;
+    --font-mono: var(--font-mono), "Geist Mono", "IBM Plex Mono", ui-monospace, monospace;
+    --font-sans: var(--font-sans), "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .dark {
+    --ink: #ecebe8;
+    --paper: #121314;
+  }
+
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+}
+
+.font-serif-ink {
+  font-family: var(--font-serif);
+}
+
+.font-mono-ink {
+  font-family: var(--font-mono);
+}
+
+.font-sans-ink {
+  font-family: var(--font-sans);
+}
+
+/* E-Ink Refresh Flash Effect */
+@keyframes eink-flash {
+  0% {
+    filter: invert(1) contrast(200%);
+    opacity: 0.92;
+  }
+  50% {
+    filter: invert(0) contrast(140%);
+    opacity: 0.97;
+  }
+  100% {
+    filter: invert(0) contrast(100%);
+    opacity: 1;
+  }
+}
+
+.eink-refreshing {
+  animation: eink-flash 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Minimal E-Ink Canvas */
+.e-ink-container {
+  background-color: var(--paper);
+  color: var(--ink);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+/* Dotted leader for Notes list */
+.dotted-leader {
+  background-image: radial-gradient(circle, currentColor 0.8px, transparent 1.2px);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+  background-position: bottom 6px left 0;
+}
+
+/* Minimal Note Article Typography */
+.note-prose {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.note-prose h1, .note-prose h2, .note-prose h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.note-prose h1 {
+  font-size: 1.875rem;
+  line-height: 1.25;
+}
+
+.note-prose h2 {
+  font-size: 1.375rem;
+  line-height: 1.35;
+}
+
+.note-prose h3 {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.note-prose p {
+  margin-bottom: 1.25rem;
+  text-align: justify;
+}
+
+.note-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.note-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.note-prose li {
+  margin-bottom: 0.35rem;
+}
+
+.note-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px dashed currentColor;
+  opacity: 0.9;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  background: transparent;
+}
+
+.note-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.15em 0.35em;
+  border: 1px solid currentColor;
+  opacity: 0.85;
+}
+
+.note-prose pre code {
+  border: none;
+  padding: 0;
+  display: block;
+}
+
+/* Syntax Highlighting - Light Theme */
+.hljs-comment,
+.hljs-quote {
+  color: #737370;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.hljs-string,
+.hljs-title.class_,
+.hljs-section,
+.hljs-attribute,
+.hljs-literal,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-addition {
+  color: #15803d;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: #b45309;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-function,
+.hljs-title.function_ {
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-attr {
+  color: #4338ca;
+}
+
+.hljs-built_in {
+  color: #0e7490;
+}
+
+/* Syntax Highlighting - Dark Theme */
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: #8c8c88;
+  font-style: italic;
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-subst {
+  color: #f87171;
+  font-weight: 500;
+}
+
+.dark .hljs-string,
+.dark .hljs-title.class_,
+.dark .hljs-section,
+.dark .hljs-attribute,
+.dark .hljs-literal,
+.dark .hljs-template-tag,
+.dark .hljs-template-variable,
+.dark .hljs-type,
+.dark .hljs-addition {
+  color: #4ade80;
+}
+
+.dark .hljs-number,
+.dark .hljs-symbol,
+.dark .hljs-bullet {
+  color: #fb923c;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-function,
+.dark .hljs-title.function_ {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.dark .hljs-variable,
+.dark .hljs-params,
+.dark .hljs-attr {
+  color: #a5b4fc;
+}
+
+.dark .hljs-built_in {
+  color: #38bdf8;
+}
+
+.note-prose blockquote {
+  border-left: 2px solid currentColor;
+  padding-left: 1rem;
+  font-style: italic;
+  opacity: 0.85;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+
+
