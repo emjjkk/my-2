@@ -262,5 +262,16 @@
   margin-bottom: 1.25rem;
 }
 
+* {
+  /* Hides scrollbar in Chrome, Safari, Opera, and Edge (Chromium) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
+  /* Hides scrollbar in Firefox */
+  scrollbar-width: none;
+
+  /* Hides scrollbar in Legacy IE and Edge */
+  -ms-overflow-style: none;
+}
 
