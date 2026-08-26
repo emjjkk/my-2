@@ -236,8 +236,8 @@ export default function DiscordActivity() {
               ✕
             </span>
           </div>
-          <p className="opacity-80">
-            Powered by <strong>Lanyard API</strong>. Shows live UTC+2 time by default, and alternates with real-time Discord activity (coding, Spotify, games) with a smooth fade every 6 seconds.
+          <p className="opacity-100">
+            Powered by <strong>Lanyard API</strong>.
           </p>
         </div>
       )}
