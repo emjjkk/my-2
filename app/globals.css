@@ -107,7 +107,7 @@
 
 .note-prose p {
   margin-bottom: 1.25rem;
-  text-align: justify;
+  text-align: left;
 }
 
 .note-prose ul {

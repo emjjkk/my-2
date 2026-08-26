@@ -52,6 +52,10 @@ export default function PortfolioPage() {
             performance and optimization. I also build native mobile and desktop apps as well as
             third-party integrations.
           </p>
+
+          <a href="/Emmanuel_Alabi_Resume_Final.pdf" target="_blank" rel="noreferrer">
+            <p className="text-md hover:underline pt-2 -mb-4">View my resume (PDF) <ArrowUpRight className="w-4 h-4 inline" /></p>
+          </a>
         </section>
 
         {/* Minimal Hairline Divider */}
