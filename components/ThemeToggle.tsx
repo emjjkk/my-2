@@ -60,7 +60,7 @@ export default function ThemeToggle() {
       id="theme-toggle"
       onClick={toggleTheme}
       title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
-      className="hover:opacity-100 hover:underline underline-offset-4 cursor-pointer transition-opacity flex items-center gap-1.5"
+      className="hover:opacity-100 hover:underline hover:text-yellow-400 underline-offset-4 cursor-pointer transition-opacity flex items-center gap-1.5"
     >
       {isDark ? (
         <>

@@ -184,14 +184,14 @@ export default function DiscordActivity() {
       case 'music':
         return (
           <Disc3
-            className="w-3.5 h-3.5 animate-spin opacity-80 shrink-0"
+            className="w-3.5 h-3.5 animate-spin opacity-80 shrink-0 text-green-500"
             style={{ animationDuration: '4s' }}
           />
         );
       case 'game':
-        return <Gamepad2 className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+        return <Gamepad2 className="w-3.5 h-3.5 opacity-80 shrink-0 text-red-500" />;
       case 'coding':
-        return <Code2 className="w-3.5 h-3.5 opacity-80 shrink-0" />;
+        return <Code2 className="w-3.5 h-3.5 opacity-80 shrink-0 text-blue-500" />;
       default:
         return <Radio className="w-3.5 h-3.5 opacity-80 shrink-0" />;
     }
