@@ -23,12 +23,30 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: 'Emmanuel Alabi — Portfolio',
+  metadataBase: new URL('https://emjjkk.tech'),
+  title: {
+    default: 'Emmanuel Alabi — Portfolio',
+    template: '%s',
+  },
   description: 'Minimal portfolio and writing by Emmanuel Alabi (Thursday), Thai-Nigerian full-stack developer based in Rwanda.',
+  authors: [{ name: 'Emmanuel Alabi', url: 'https://emjjkk.tech' }],
+  creator: 'Emmanuel Alabi',
   openGraph: {
     title: 'Emmanuel Alabi — Portfolio',
     description: 'Minimal portfolio and writing by Emmanuel Alabi (Thursday).',
+    url: 'https://emjjkk.tech',
+    siteName: 'Emmanuel Alabi',
+    locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Emmanuel Alabi — Portfolio',
+    description: 'Minimal portfolio and writing by Emmanuel Alabi (Thursday).',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

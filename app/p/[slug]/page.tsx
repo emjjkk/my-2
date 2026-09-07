@@ -8,6 +8,7 @@ import rehypeHighlight from 'rehype-highlight';
 import { getAllPosts, getPostBySlug, getAdjacentPosts } from '@/lib/posts';
 import type { Metadata } from 'next';
 import ThemeToggle from '@/components/ThemeToggle';
+import CodeBlock from '@/components/CodeBlock';
 
 interface PostPageProps {
   params: Promise<{
@@ -29,12 +30,53 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   if (!post) {
     return {
       title: 'Post Not Found — Emmanuel Alabi',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  const title = `${post.title} — Emmanuel Alabi`;
+  const description = post.summary;
+  const url = `/p/${post.slug}`;
+
   return {
-    title: `${post.title} — Emmanuel Alabi`,
-    description: post.summary,
+    title,
+    description,
+    authors: [{ name: 'Emmanuel Alabi', url: 'https://emjjkk.tech' }],
+    creator: 'Emmanuel Alabi',
+    publisher: 'emjjkk.tech',
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Emmanuel Alabi',
+      locale: 'en_US',
+      type: 'article',
+      publishedTime: post.date,
+      authors: ['Emmanuel Alabi'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      creator: '@emjjkk',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
   };
 }
 
@@ -48,11 +90,34 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const { prev, next } = getAdjacentPosts(slug);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.date,
+    author: {
+      '@type': 'Person',
+      name: 'Emmanuel Alabi',
+      url: 'https://emjjkk.tech',
+    },
+    url: `https://emjjkk.tech/p/${post.slug}`,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://emjjkk.tech/p/${post.slug}`,
+    },
+  };
+
   return (
     <main
       id="post-page-root"
       className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="max-w-3xl mx-auto border-l border-dashed border-neutral-400 dark:border-neutral-600">
       {/* Top Minimal Navigation Bar */}
       <nav className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-70">
         <Link
@@ -67,7 +132,7 @@ export default async function PostPage({ params }: PostPageProps) {
       </nav>
 
       {/* Article Content Container */}
-      <article className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-8">
+      <article className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-8 font-light">
         {/* Post Metadata Header */}
         <header className="space-y-3 border-b border-dashed border-current opacity-90 pb-6">
           <div className="flex items-center gap-2 font-mono-ink text-xs opacity-60 uppercase">
@@ -76,7 +141,7 @@ export default async function PostPage({ params }: PostPageProps) {
             <span>{post.readTime}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-sans font-semibold tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-sans font-regular tracking-tight leading-tight">
             {post.title}
           </h1>
 
@@ -91,7 +156,21 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="note-prose text-justify leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
+            rehypePlugins={[
+              [
+                rehypeHighlight,
+                {
+                  aliases: {
+                    typescript: ['tsx', 'ts'],
+                    javascript: ['jsx', 'js', 'mjs', 'cjs'],
+                    bash: ['cmd', 'sh', 'zsh', 'shell', 'terminal', 'console', 'powershell', 'ps1', 'bat', 'batch'],
+                  },
+                },
+              ],
+            ]}
+            components={{
+              pre: CodeBlock,
+            }}
           >
             {post.content}
           </ReactMarkdown>
@@ -142,6 +221,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </footer>
         </div>
       </article>
+      </div>
     </main>
   );
 }

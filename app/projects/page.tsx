@@ -14,8 +14,9 @@ export default function ProjectsPage() {
   return (
     <main
       id="projects-page-root"
-      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)]"
+      className="min-h-screen transition-colors duration-200 bg-[var(--paper)] text-[var(--ink)] "
     >
+      <div className="max-w-3xl mx-auto border-l border-dashed border-neutral-400 dark:border-neutral-600">
       {/* Top Minimal Navigation Bar */}
       <nav className="w-full max-w-2xl mx-auto px-5 sm:px-6 pt-10 sm:pt-14 pb-4 flex items-center justify-between font-mono-ink text-xs opacity-70">
         <Link
@@ -30,11 +31,11 @@ export default function ProjectsPage() {
       </nav>
 
       {/* Projects Content Container */}
-      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-10">
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-10 font-light">
         {/* Header */}
         <header className="space-y-2 border-b border-dashed border-current opacity-90 pb-6">
           <div className="flex justify-between items-baseline">
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-regular tracking-tight leading-tight">
               All Projects
             </h1>
             <span className="font-mono-ink text-xs opacity-50">[ {ALL_PROJECTS.length} ]</span>
@@ -54,7 +55,7 @@ export default function ProjectsPage() {
             >
               <div className="flex items-baseline justify-between flex-wrap gap-2">
                 <div className="flex items-baseline gap-2.5">
-                  <h2 className="text-base sm:text-lg font-semibold group-hover:underline underline-offset-4">
+                  <h2 className="text-base sm:text-lg font-medium group-hover:underline underline-offset-4">
                     {project.title}
                   </h2>
                   <span className="font-mono-ink text-xs opacity-50">
@@ -112,6 +113,7 @@ export default function ProjectsPage() {
             ← Return Home
           </Link>
         </footer>
+      </div>
       </div>
     </main>
   );

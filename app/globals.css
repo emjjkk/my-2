@@ -107,7 +107,6 @@
 
 .note-prose p {
   margin-bottom: 1.25rem;
-  text-align: left;
 }
 
 .note-prose ul {
@@ -137,6 +136,12 @@
   margin-bottom: 1.5rem;
   border-radius: 0;
   background: transparent;
+}
+
+.note-prose .code-block-container pre {
+  border: none;
+  margin: 0;
+  padding: 0.875rem 1rem;
 }
 
 .note-prose code {
