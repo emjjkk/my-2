@@ -31,7 +31,7 @@ interface LanyardData {
 
 // User can set their Discord ID in NEXT_PUBLIC_DISCORD_USER_ID
 // or we fall back to a reasonable default ID or dynamic fallback activity
-const DEFAULT_DISCORD_ID = process.env.NEXT_PUBLIC_DISCORD_USER_ID || '1137024341908959242';
+const DEFAULT_DISCORD_ID = '1100072616317952040';
 
 function getUtc2TimeString(): string {
   try {
