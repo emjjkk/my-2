@@ -9,6 +9,15 @@ export interface Project {
 
 export const ALL_PROJECTS: Project[] = [
   {
+    title: 'Weflixd.live',
+    category: 'Web Application',
+    description:
+      'Weflixd is a movie and TV show discovery platform with social features powered by TMDB and Justwatch APIs.',
+    tech: ['NextJS', 'Supabase', 'TypeScript', 'TailwindCSS'],
+    github: 'https://github.com/emjjkk/weflixd.live',
+    link: 'https://weflixd.live',
+  },
+  {
     title: 'Livewall',
     category: 'Desktop App',
     description:
