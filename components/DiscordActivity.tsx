@@ -115,7 +115,7 @@ export default function DiscordActivity() {
 
         // 1. Check Spotify listening status
         if (data.listening_to_spotify && data.spotify) {
-          setActivityText(`Listening to ${data.spotify.song} — ${data.spotify.artist}`);
+          setActivityText(`Listening to ${data.spotify.song} — ${data.spotify.artist.replaceAll(';', ',')}`);
           setActivityType('music');
           return;
         }
