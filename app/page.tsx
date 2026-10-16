@@ -31,16 +31,16 @@ export default function PortfolioPage() {
         {/* Single Column Flowing Content */}
         <div className="w-full max-w-2xl mx-auto px-5 sm:px-6 py-8 sm:py-12 space-y-12 sm:space-y-14">
           {/* Header & Bio */}
-          <section id="about-section" className="space-y-4">
-            <div className="space-y-1">
+          <section id="about-section" className="space-y-3">
+            <div className="space-y-3">
               <h1
                 id="main-heading"
                 className="text-3xl sm:text-4xl"
               >
                 Emmanuel Alabi
               </h1>
-              <p className="font-mono-ink text-md opacity-60 tracking-wider">
-                Software Engineer, CS Student
+              <p className="text-md opacity-60 tracking-wider">
+                Software Engineer, Quality Assurance @ Irembo
               </p>
             </div>
 
@@ -48,10 +48,10 @@ export default function PortfolioPage() {
               id="bio-paragraph"
               className="text-base sm:text-md  leading-relaxed opacity-90 pt-2 text-justify"
             >
-              You can call me Thursday. I'm a Thai-Nigerian dev based in
-              Rwanda, currently building full-stack web applications with a focus on
+              You can call me Thursday. I'm a Thai-Nigerian software engineer currently based in
+              Rwanda. I build full-stack applications with a focus on
               performance and optimization. I also build native mobile and desktop apps as well as
-              third-party integrations.
+              third-party integrations. My off-work activities include video editing with Davinci Resolve, competitive gaming, and community management. 
             </p>
 
             <a href="/Emmanuel_Alabi_Resume_Updated_v10.pdf" target="_blank" rel="noreferrer">
